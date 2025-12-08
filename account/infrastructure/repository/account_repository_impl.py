@@ -1,3 +1,5 @@
+from typing import List
+
 from sqlalchemy.orm import Session
 from account.application.port.account_repository_port import AccountRepositoryPort
 from account.domain.account import Account
@@ -36,6 +38,17 @@ class AccountRepositoryImpl(AccountRepositoryPort):
         account.created_at = orm_account.created_at
         account.updated_at = orm_account.updated_at
         return account
+
+    def find_all_by_id(self, ids: list[int]) -> List[Account]:
+        orm_accounts = self.db.query(AccountORM).filter(AccountORM.id.in_(ids)).all()
+        accounts: List[Account] = []
+        for o in orm_accounts:
+            account = Account(email=o.email, nickname=o.nickname)
+            account.id = o.id
+            account.created_at = o.created_at
+            account.updated_at = o.updated_at
+            accounts.append(account)
+        return accounts
 
     def count(self) -> int:
         return self.db.query(AccountORM).count()

@@ -1,3 +1,5 @@
+from typing import List, Optional
+
 from account.application.port.account_repository_port import AccountRepositoryPort
 from account.domain.account import Account
 
@@ -17,3 +19,14 @@ class AccountUseCase:
 
         account = Account(email=email, nickname=nickname)
         return self.repo.save(account)
+
+    def get_account_by_id(self, account_id: int) -> Optional[Account]:
+        accounts = self.get_accounts_by_ids([account_id])
+        return accounts[0] if accounts else None
+
+    def get_accounts_by_ids(self, ids: list[int]) -> List[Account]:
+
+        if not ids:
+            return []
+
+        return self.repo.find_all_by_id(ids)
